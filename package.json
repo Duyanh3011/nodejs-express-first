@@ -4,6 +4,7 @@
   "description": "first project express",
   "main": "src/index.js",
   "scripts": {
+    "beautiful": "lint-staged",
     "start": "nodemon --inspect src/index.js",
     "watch": "sass -w src/resources/scss/app.scss src/public/css/app.css",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,13 +24,24 @@
     "url": "https://github.com/Duyanh3011/nodejs-express-first/issues"
   },
   "homepage": "https://github.com/Duyanh3011/nodejs-express-first#readme",
+  "lint-staged": {
+    "src/**/*.{js,json,scss}": "prettier --single-quote --trailing-comma all --tab-width 4 --write"
+  },
+  "husky": {
+    "hooks":{
+      "pre-commit": "lint-staged"
+    }
+  },
   "dependencies": {
     "express": "^4.21.0"
   },
   "devDependencies": {
     "express-handlebars": "^8.0.1",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.7",
+    "prettier": "^3.3.3",
     "sass": "^1.79.4"
   }
 }

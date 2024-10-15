@@ -1,27 +1,19 @@
-const newsRouter = require('./news');
 
-function route(app) {
-    app.use('/news', newsRouter);
+const newsRouter = require('./news')
+const siteRouter = require('./site')
+const courseRouter = require('./courses')
+const meRouter = require('./me')
 
-    app.get('/', (req, res) => {
-        // var a = 1
-        // var b = 2
-        // var c = a + b
-        //     return res.send(
-        //         '<h1 style="color: red">hello world!</h1>'
-        //     )
-        res.render('home');
-    });
-
-    app.get('/search', (req, res) => {
-        console.log(req.query.q);
-        res.render('search');
-    });
-
-    app.post('/search', (req, res) => {
-        console.log(req.body);
-        res.send('');
-    });
+function route(app){
+    app.use('/news', newsRouter)
+    app.use('/me', meRouter)
+    app.use('/courses', courseRouter)
+    app.use('/', siteRouter)
+    
+    // app.post('/search', (req, res) => {
+    //     console.log(req.body)
+    //     res.send("")
+    // })
 }
 
 module.exports = route;

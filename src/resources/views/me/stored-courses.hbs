@@ -1,0 +1,125 @@
+<form class="mt-4" name="container-form" method="post" action="/courses/handle-form-actions">
+    <h3>My course</h3>
+    <a href="/me/trash/courses">Trash can ({{deletedCount}})</a>
+
+    <div class="my-3 d-flex align-items-center">
+        <div class="form-group form-check d-flex align-items-center">
+            <input class="form-check-input" type="checkbox" name="selected-all" id="selected-all">
+            <label for="selected-all" class="form-check-label text-center">Select all courses</label>
+        </div>
+        <select class="w-25 mx-3 custom-select" name="action" required="required" id="select-action">
+            <option value="">-- Select action --</option>
+            <option value="delete">Delete</option>
+        </select>
+
+        <button class="btn btn-primary" name="btn-submit" disabled="disabled">Proceed</button>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" colspan="2">#</th>
+                <th scope="col">Name
+                    {{{sortable 'name' _sort}}}
+                </th>
+                <th scope="col">Level
+                    {{{sortable 'level' _sort}}}
+                </th>
+                <th scope="col">Created Date
+                    {{{sortable 'createdAt' _sort}}}
+                </th>
+                <th scope="col" colspan="2">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+            <tr>
+                <th scope="row">{{sum @index 1}}</th>
+                {{!-- //custom helpers handlebarjs -> express handlebar --}}
+                <td><input type="checkbox" name="checkBoxCoures[]" id="{{this._id}}" value="{{this._id}}"></td>
+                <td>{{this.name}}</td>
+                <td>{{this.level}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>
+                    <a class="btn btn-link" href="/courses/{{this._id}}/edit">Edit</a>
+                </td>
+                <td>
+                    <a class="btn btn-link" href="#" data-toggle="modal" data-id="{{this._id}}"
+                        data-target="#delete-course-modal">Delete</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="6" class="text-center">No courses added yet.
+                    <a href="/courses/create">Add new course</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+
+{{!-- CF delete --}}
+<!-- Modal -->
+<div class="modal fade" id="delete-course-modal" tabindex="-1" aria-labelledby="delete-course-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="delete-course-modalLabel">Delete confirm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Do you want to delete the course?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="btn-delete-course" type="button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Delete hidden form --}}
+<form action="" method="post" name="delete-course-form"></form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () { // $ err => dom load done => function
+        // when dialog cf show 
+        var courseID
+        var deleteFrom = document.forms['delete-course-form']
+        var btnDeleteCourse = document.getElementById('btn-delete-course')
+        var checkboxesCourses = $('input[name="checkBoxCoures[]"')
+        var selectedAllCheckeBox = $('input[name="selected-all"]')
+        var submitBtn = $('button[name="btn-submit"]')        // select all courses
+
+        $('#delete-course-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            courseID = button.data('id') // Extract info from data-* attributes
+            console.log(courseID)
+        })
+
+
+        selectedAllCheckeBox.on('change', function (event) {
+            checkboxesCourses.prop('checked', $(this).prop('checked'))
+            rendercheckAllSubmitbutton()
+        })
+
+        checkboxesCourses.on('change', function (event) {
+            selectedAllCheckeBox.prop('checked', (checkboxesCourses.length === checkboxesCourses.filter(':checked').length))
+            rendercheckAllSubmitbutton()
+        })
+
+        btnDeleteCourse.onclick = function (event) {
+            deleteFrom.action = `/courses/${courseID}?_method=delete`
+            deleteFrom.submit()
+        }
+
+        function rendercheckAllSubmitbutton() {
+            var checkboxesCoursesLength = checkboxesCourses.filter(":checked").length
+            submitBtn.attr('disabled', checkboxesCoursesLength === 0)
+        }
+    })
+</script>
+<script src="https://kit.fontawesome.com/8879c4649e.js" crossorigin="anonymous"></script>
